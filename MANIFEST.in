@@ -1,0 +1,9 @@
+include ovirt-setup-lib.spec.in
+include ovirt-setup-lib.spec
+include setup.py.in
+include configure.ac
+include configure
+include Makefile
+include MANIFEST.in
+include COPYING
+include README.md
