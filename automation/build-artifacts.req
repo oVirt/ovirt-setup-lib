@@ -1,0 +1,6 @@
+yum-utils
+autoconf
+automake
+make
+python-devel
+git
