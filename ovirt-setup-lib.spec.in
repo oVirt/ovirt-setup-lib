@@ -60,7 +60,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/ovirt_setup_lib/
-%{_pkgdocdir}-%{version}/
+%{_defaultdocdir}/%{name}-%{version}/
 %if 0%{?rhel} && 0%{?rhel} <= 6
 %doc COPYING
 %else
