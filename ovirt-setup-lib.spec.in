@@ -19,6 +19,8 @@
 %{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 %endif
 
+%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+
 %global         package_version @PACKAGE_VERSION@
 
 Summary:        oVirt setup common library
@@ -46,7 +48,7 @@ oVirt setup common library
 
 %build
 %configure \
-        --docdir="%{_docdir}/%{name}-%{version}" \
+        --docdir="%{_pkgdocdir}" \
         --disable-python-syntax-check \
         %{?conf}
 make %{?_smp_mflags}
@@ -60,7 +62,8 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/ovirt_setup_lib/
-%{_defaultdocdir}/%{name}-%{version}/
+%{_pkgdocdir}/*
+%doc README.md
 %if 0%{?rhel} && 0%{?rhel} <= 6
 %doc COPYING
 %else
@@ -69,5 +72,8 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Tue Jul 14 2015 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.0-0.0.master
+* Wed Jul 15 2015 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.0-0.0.master
 - initial packaging
+- doc: https://fedoraproject.org/wiki/Changes/UnversionedDocdirs
+- python: https://fedoraproject.org/wiki/Packaging:Python#Macros
+
