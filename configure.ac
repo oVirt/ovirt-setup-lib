@@ -15,17 +15,39 @@ PACKAGE_RPM_RELEASE="VERSION_RELEASE.VERSION_SUFFIX"
 AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
 
-# Checks for programs.
+AC_CONFIG_AUX_DIR([.])
+AC_CONFIG_SRCDIR([src/ovirt_setup_lib/__init__.py])
+AC_CONFIG_MACRO_DIR([m4])
+AM_INIT_AUTOMAKE([1.9])
+AM_GNU_GETTEXT_VERSION([0.17])
+AM_PO_SUBDIRS
 
-# Checks for libraries.
+AC_ARG_ENABLE(
+	[python-syntax-check],
+	[AS_HELP_STRING([--disable-python-syntax-check], [disable python syntax check @<:@default=enabled@:>@])],
+	,
+	[enable_python_syntax_check="yes"]
+)
 
-# Checks for header files.
+AC_PROG_INSTALL
 
-# Checks for typedefs, structures, and compiler characteristics.
+AC_ARG_VAR([PYFLAKES], [path to pyflakes utility])
+AC_CHECK_PROGS([PYFLAKES], [pyflakes])
+AC_ARG_VAR([PEP8], [path to pep8 utility])
+AC_CHECK_PROGS([PEP8], [pep8])
 
-# Checks for library functions.
+AM_PATH_PYTHON([2.6],, [AC_MSG_ERROR([Cannot find python])])
+AM_CONDITIONAL([PYTHON_SYNTAX_CHECK], [test "${enable_python_syntax_check}" = "yes"])
+
+ovirtsetuplibdir="\$(pythondir)/ovirt_setup_lib"
+AC_SUBST([ovirtsetuplibdir])
+
 AC_CONFIG_FILES([
+	Makefile
+	build/Makefile
+	po/Makefile.in
+	src/Makefile
+	src/ovirt_setup_lib/Makefile
 	ovirt-setup-lib.spec
-	setup.py
 ])
 AC_OUTPUT
