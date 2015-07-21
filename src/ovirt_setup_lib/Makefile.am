@@ -7,6 +7,7 @@ MAINTAINERCLEANFILES = \
 dist_ovirtsetuplib_PYTHON = \
 	__init__.py \
 	dialog.py \
+	hostname.py \
 	$(NULL)
 
 clean-local: \
