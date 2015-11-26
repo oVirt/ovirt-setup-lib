@@ -135,7 +135,7 @@ class Hostname(base.Base):
     def logger(self):
         return self._plugin.logger
 
-    def _getNonLoopbackAddresses(self):
+    def _getLocalAddresses(self, exclude_loopback=False):
         interfaces = {}
         addresses = {}
         rc, stdout, stderr = self.execute(
@@ -160,7 +160,9 @@ class Hostname(base.Base):
                 )
         iplist = []
         for interface, loopback in interfaces.iteritems():
-            if not loopback:
+            if exclude_loopback and loopback:
+                pass
+            else:
                 iplist.extend(addresses.get(interface, []))
 
         self.logger.debug('addresses: %s' % iplist)
@@ -191,6 +193,8 @@ class Hostname(base.Base):
         dns,
         reverse_dns,
         local_non_loopback,
+        not_local,
+        not_local_text,
     ):
 
         if system:
@@ -242,7 +246,9 @@ class Hostname(base.Base):
                     )
 
         if local_non_loopback:
-            if not resolvedAddresses.issubset(self._getNonLoopbackAddresses()):
+            if resolvedAddresses.issubset(
+                    self._getLocalAddresses(exclude_loopback=True)
+            ):
                 raise RuntimeError(
                     _(
                         'The following addreses: '
@@ -250,6 +256,22 @@ class Hostname(base.Base):
                         'to non loopback devices on this host'
                     ).format(
                         addresses=resolvedAddressesAsString
+                    )
+                )
+
+        if not_local:
+            if resolvedAddresses.issubset(
+                self._getLocalAddresses(exclude_loopback=False)
+            ):
+                raise RuntimeError(
+                    _(
+                        '{fqdn} resolves to {addresses}, and at least one of '
+                        'them is locally used on this machine. '
+                        '{not_local_text}'
+                    ).format(
+                        fqdn=fqdn,
+                        addresses=resolvedAddressesAsString,
+                        not_local_text=not_local_text,
                     )
                 )
 
@@ -319,25 +341,31 @@ class Hostname(base.Base):
 
     def getHostnameTester(
         self,
-        validate_syntax=False,  # Does it look like an fqdn?
+        validate_syntax=False,  # Validate fqdn syntax
         system=True,  # Local resolver
         dns=False,  # dig against default name server(s)
         reverse_dns=True,  # dig -x, check only if dns==True
         local_non_loopback=False,  # matches a local non-loopback address
+        not_local=False,  # If True, refuse a name of the current machine
+        not_local_text='',  # Additional hint if it fails not_local test
+        allow_empty=False,  # Allow empty responses
     ):
 
         def test_hostname(name):
             res = ''
             try:
-                if validate_syntax:
-                    self._validateFQDN(name)
-                self._validateFQDNresolvability(
-                    name,
-                    system,
-                    dns,
-                    reverse_dns,
-                    local_non_loopback,
-                )
+                if not (allow_empty and not name):
+                    if validate_syntax:
+                        self._validateFQDN(name)
+                    self._validateFQDNresolvability(
+                        name,
+                        system,
+                        dns,
+                        reverse_dns,
+                        local_non_loopback,
+                        not_local,
+                        not_local_text,
+                    )
             except RuntimeError as e:
                 res = _('Host name is not valid: {e}').format(e=e)
                 self.logger.debug('test_hostname exception', exc_info=True)
