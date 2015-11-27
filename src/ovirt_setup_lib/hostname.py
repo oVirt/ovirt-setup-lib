@@ -21,6 +21,7 @@ import re
 import socket
 
 from otopi import base, util
+from otopi import plugin as oplugin
 
 from ovirt_setup_lib import dialog
 
@@ -106,10 +107,48 @@ class Hostname(base.Base):
         """
     )
 
+    _REQUIRED_CMD = set(['dig', 'ip'])
+
     def __init__(self, plugin):
         super(Hostname, self).__init__()
         self._plugin = plugin
-        self.command.detect('dig')
+
+        context = self._plugin.context
+        if hasattr(context, 'currentStage'):
+            current_stage = context.currentStage
+        else:
+            msg = _(
+                '{classname} cannot be initialized out of '
+                'OTOPI stages'
+            ).format(
+                classname=type(self).__name__,
+            )
+            self.logger.error(msg)
+            raise RuntimeError(msg)
+
+        if current_stage < oplugin.Stages.STAGE_PROGRAMS:
+            for cmd in self._REQUIRED_CMD:
+                self.command.detect(cmd)
+        else:
+            self.logger.debug(
+                (
+                    '{classname} initialized only at stage {current_stage} '
+                    'so the dection of the required commands is up to '
+                    'the caller object'
+                ).format(
+                    classname=type(self).__name__,
+                    current_stage=current_stage,
+                )
+            )
+        cmd_to_be_detected = set(self.command.enum())
+        if not self._REQUIRED_CMD.issubset(cmd_to_be_detected):
+            msg = _(
+                'Not all the required commands has been required for '
+                'command detection, please instantiate this class '
+                'before STAGE_PROGRAMS or externally detect'
+            )
+            self.logger.error(msg)
+            raise RuntimeError(msg)
 
     @property
     def plugin(self):
@@ -246,21 +285,22 @@ class Hostname(base.Base):
                     )
 
         if local_non_loopback:
-            if resolvedAddresses.issubset(
+            if not resolvedAddresses.issubset(
                     self._getLocalAddresses(exclude_loopback=True)
             ):
                 raise RuntimeError(
                     _(
-                        'The following addreses: '
-                        "{addresses} can't be mapped "
+                        '{fqdn} resolves to {addresses} and '
+                        'not all of them can be mapped '
                         'to non loopback devices on this host'
                     ).format(
+                        fqdn=fqdn,
                         addresses=resolvedAddressesAsString
                     )
                 )
 
         if not_local:
-            if resolvedAddresses.issubset(
+            if resolvedAddresses.intersection(
                 self._getLocalAddresses(exclude_loopback=False)
             ):
                 raise RuntimeError(
@@ -379,6 +419,7 @@ class Hostname(base.Base):
         whichhost,
         supply_default,
         prompttext=None,
+        dialog_name=None,
         **tester_kwarg
     ):
 
@@ -388,10 +429,12 @@ class Hostname(base.Base):
             ).format(
                 whichhost=whichhost,
             )
-        return dialog.queryEnvKey(
-            name='OVESETUP_NETWORK_FQDN_{whichhost}'.format(
+        if dialog_name is None:
+            dialog_name = 'OVESETUP_NETWORK_FQDN_{whichhost}'.format(
                 whichhost=whichhost.replace(' ', '_'),
-            ),
+            )
+        return dialog.queryEnvKey(
+            name=dialog_name,
             dialog=self.dialog,
             logger=self.logger,
             env=self.environment,
@@ -408,6 +451,7 @@ class Hostname(base.Base):
                     'test': self.getHostnameTester(**tester_kwarg),
                 },
             ),
+            store=(True if envkey else False),
         )
 
 
