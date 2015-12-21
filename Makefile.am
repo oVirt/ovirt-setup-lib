@@ -26,6 +26,7 @@ SUBDIRS = \
 	build \
 	po \
 	src \
+	tests \
 	$(NULL)
 
 dist_noinst_DATA = \

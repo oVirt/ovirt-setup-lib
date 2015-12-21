@@ -17,3 +17,5 @@ ovirt-setup-lib.spec
 m4
 intl
 
+*.pyc
+*.pyo

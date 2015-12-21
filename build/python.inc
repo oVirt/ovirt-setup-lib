@@ -14,3 +14,8 @@ endif
 python-clean:
 	rm -rf $(srcdir)/__pycache__ __pycache__
 	rm -f $(srcdir)/*.pyc $(srcdir)/*.pyo *.pyc *.pyo
+
+python-check:
+	if [ -n "$(UNIT2)" ]; then \
+		$(UNIT2) discover -v; \
+	fi

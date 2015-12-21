@@ -35,6 +35,8 @@ AC_ARG_VAR([PYFLAKES], [path to pyflakes utility])
 AC_CHECK_PROGS([PYFLAKES], [pyflakes])
 AC_ARG_VAR([PEP8], [path to pep8 utility])
 AC_CHECK_PROGS([PEP8], [pep8])
+AC_ARG_VAR([UNIT2], [path to unit2 utility])
+AC_CHECK_PROGS([UNIT2], [unit2])
 
 AM_PATH_PYTHON([2.6],, [AC_MSG_ERROR([Cannot find python])])
 AM_CONDITIONAL([PYTHON_SYNTAX_CHECK], [test "${enable_python_syntax_check}" = "yes"])
@@ -48,6 +50,7 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	src/Makefile
 	src/ovirt_setup_lib/Makefile
+	tests/Makefile
 	ovirt-setup-lib.spec
 ])
 AC_OUTPUT
