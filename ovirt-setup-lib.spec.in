@@ -72,6 +72,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Dec 22 2015 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.1-1
+- 1.0.1-1
+
 * Tue Sep 22 2015 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.0-1
 - 1.0.0-1
 
