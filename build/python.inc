@@ -17,5 +17,5 @@ python-clean:
 
 python-check:
 	if [ -n "$(UNIT2)" ]; then \
-		$(UNIT2) discover -v; \
+		PYTHONPATH="$(top_srcdir)/src:$$PYTHONPATH" $(UNIT2) discover -v; \
 	fi

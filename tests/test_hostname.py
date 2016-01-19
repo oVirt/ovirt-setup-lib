@@ -35,6 +35,7 @@ class HostnameTestCase(BaseTestCase):
     def setUp(self):
         self.mock_otopi()
         self.apply_patch()
+        self.Plugin.command.enum.return_value = ['dig', 'ip']
         self.hostname = Hostname(self.Plugin)
 
     def test_getLocalAddresses(self):
