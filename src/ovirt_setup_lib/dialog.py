@@ -85,6 +85,11 @@ def queryEnvKey(
     'store' -- Store the value in environment
     """
 
+    logger.debug(
+        'queryEnvKey called for key {key}'.format(
+            key=key,
+        )
+    )
     interactive = key not in env or env[key] is None
     valid = False
     while not valid:
