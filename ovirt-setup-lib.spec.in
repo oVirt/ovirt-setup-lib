@@ -27,7 +27,7 @@ Summary:        oVirt setup common library
 Name:           @PACKAGE_NAME@
 Version:        @PACKAGE_RPM_VERSION@
 Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?dist}
-Source0:        http://resources.ovirt.org/pub/ovirt-master-snapshot/src/%{name}/%{name}-%{package_version}.tar.gz
+Source0:        http://resources.ovirt.org/pub/src/%{name}/%{name}-%{package_version}.tar.gz
 License:        ASL 2.0
 Group:          Development/Libraries
 BuildArch:      noarch
@@ -72,6 +72,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue May 31 2016 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.2-1
+- 1.0.2-1
+
 * Tue Dec 22 2015 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.1-1
 - 1.0.1-1
 
