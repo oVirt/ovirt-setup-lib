@@ -39,7 +39,6 @@ class Hostname(base.Base):
         pattern=r"""
             ^
             [A-Za-z0-9\.\-]+
-            \w+
             $
         """
     )
@@ -338,19 +337,18 @@ class Hostname(base.Base):
             )
 
         components = fqdn.split('.', 1)
-        if len(components) == 1 or not components[0]:
+        if len(components) == 1:
             self.logger.warning(
                 _('Host name {fqdn} has no domain suffix').format(
                     fqdn=fqdn,
                 )
             )
-        else:
-            if not self._DOMAIN_RE.match(fqdn):
-                raise RuntimeError(
-                    _('Host name {fqdn} is not valid').format(
-                        fqdn=fqdn,
-                    )
+        if not components[0] or not self._DOMAIN_RE.match(fqdn):
+            raise RuntimeError(
+                _('Host name {fqdn} is not valid').format(
+                    fqdn=fqdn,
                 )
+            )
 
     def isResolvedByDNS(self, fqdn):
         args = [
