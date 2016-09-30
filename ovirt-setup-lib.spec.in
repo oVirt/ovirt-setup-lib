@@ -19,20 +19,6 @@
 %{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 %endif
 
-%if 0%{?fedora} && 0%{?fedora} >= 23
-%global with_python3 1
-%endif
-
-%if 0%{?with_python3}
-%global python python3
-%global python_devel python3-devel
-%global my_python_sitelib %{python3_sitelib}
-%else
-%global python python
-%global python_devel python2-devel
-%global my_python_sitelib %{python2_sitelib}
-%endif
-
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
 %global         package_version @PACKAGE_VERSION@
@@ -47,12 +33,12 @@ Group:          Development/Libraries
 BuildArch:      noarch
 Url:            http://www.ovirt.org
 
-Requires:       %{python}
+Requires:       python
 
 Requires:       otopi
 
 BuildRequires:  gettext
-BuildRequires:  %{python_devel}
+BuildRequires:  python2-devel
 
 %description
 oVirt setup common library
@@ -64,8 +50,7 @@ oVirt setup common library
 %configure \
         --docdir="%{_pkgdocdir}" \
         --disable-python-syntax-check \
-        %{?conf} \
-        PYTHON="%{python}"
+        %{?conf}
 make %{?_smp_mflags}
 
 %install
@@ -76,7 +61,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{my_python_sitelib}/ovirt_setup_lib/
+%{python2_sitelib}/ovirt_setup_lib/
 %{_pkgdocdir}/*
 %doc README.md
 %if 0%{?rhel} && 0%{?rhel} <= 6
