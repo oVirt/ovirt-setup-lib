@@ -1,6 +1,6 @@
 #
 # ovirt-setup-lib -- ovirt setup library
-# Copyright (C) 2013-2015 Red Hat, Inc.
+# Copyright (C) 2013-2016 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ class Hostname(base.Base):
         cmd_to_be_detected = set(self.command.enum())
         if not self._REQUIRED_CMD.issubset(cmd_to_be_detected):
             msg = _(
-                'Not all the required commands has been required for '
+                'Not all of the required commands have been required for '
                 'command detection, please instantiate this class '
                 'before STAGE_PROGRAMS or externally detect'
             )
