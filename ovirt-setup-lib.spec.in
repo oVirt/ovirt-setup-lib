@@ -21,7 +21,7 @@ Summary:        oVirt setup common library
 Name:           @PACKAGE_NAME@
 Version:        @PACKAGE_RPM_VERSION@
 Release:        @PACKAGE_RPM_RELEASE@%{?release_suffix}%{?dist}
-Source0:        http://resources.ovirt.org/pub/ovirt-master-snapshot/src/%{name}/%{name}-%{package_version}.tar.gz
+Source0:        http://resources.ovirt.org/pub/ovirt-4.1/src/%{name}/%{name}-%{package_version}.tar.gz
 License:        ASL 2.0
 Group:          Development/Libraries
 BuildArch:      noarch
@@ -61,6 +61,11 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Dec 19 2016 Sandro Bonazzola <sbonazzo@redhat.com> - 1.1.0-1
+- Resolves: BZ#1366270
+  hosted-engine-setup (and cockpit) accepts host address with an underscore
+  while the engine correctly refuses them
+
 * Fri Sep 30 2016 Sandro Bonazzola <sbonazzo@redhat.com> - 1.1.0-0.0.master
 - Dropped EL6 support
 
