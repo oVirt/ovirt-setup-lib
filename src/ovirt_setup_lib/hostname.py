@@ -50,7 +50,7 @@ class Hostname(base.Base):
             \d+
             :
             \s+
-            (?P<interface>\w+(\.\w+)?)(@\w+)?
+            (?P<interface>\w+([-.]\w+)*(\.\w+)?)(@\w+)?
             :
             \s+
             <(?P<options>[^>]+)
