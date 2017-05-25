@@ -61,6 +61,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu May 25 2017 Sandro Bonazzola <sbonazzo@redhat.com> - 1.1.1-1
+- Resolves: BZ#1452243
+
 * Mon Dec 19 2016 Sandro Bonazzola <sbonazzo@redhat.com> - 1.1.0-1
 - Resolves: BZ#1366270
   hosted-engine-setup (and cockpit) accepts host address with an underscore
