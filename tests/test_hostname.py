@@ -63,7 +63,7 @@ dynamic
             StringIO(''),
         )
 
-        addr = self.hostname._getLocalAddresses()
+        addr = self.hostname.getLocalAddresses()
 
         self.assertEqual(addr, set(['10.10.10.10', '127.0.0.1']))
 
@@ -97,13 +97,44 @@ dynamic
             StringIO(''),
         )
 
-        addr = self.hostname._getLocalAddresses(exclude_loopback=True)
+        addr = self.hostname.getLocalAddresses(exclude_loopback=True)
 
         self.assertEqual(addr, set(['10.10.10.10']))
 
         self.hostname.command.get.assert_called_once_with('ip')
         self.hostname.execute.assert_called_once_with(
             args=('/bin/ip', 'addr'),
+        )
+
+    def test_getLocalAddresses_exclude_loopback_device(self):
+        # Cover https://bugzilla.redhat.com/show_bug.cgi?id=1452243#c2
+        self.hostname.command.get.return_value = '/bin/ip'
+        self.hostname.execute.return_value = (
+            0,
+            StringIO('''\
+5: my-bond: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue \
+state UP qlen 1000
+    link/ether 00:14:5e:dd:05:55 brd ff:ff:ff:ff:ff:ff
+    inet 10.35.72.13/24 brd 10.35.72.255 scope global dynamic my-bond
+       valid_lft 42000sec preferred_lft 42000sec
+    inet6 2620:52:0:2348:6248:5124:671d:1146/64 scope global noprefixroute \
+dynamic
+       valid_lft 2591821sec preferred_lft 604621sec
+    inet6 fe80::b925:96f4:3a25:af8/64 scope link
+       valid_lft forever preferred_lft forever'''),
+            StringIO(''),
+        )
+
+        addr = self.hostname.getLocalAddresses(
+            exclude_loopback=True,
+            device="my-bond"
+        )
+
+        self.assertEqual(addr, set(['10.35.72.13']))
+
+        self.hostname.command.get.assert_called_once_with('ip')
+        self.hostname.execute.assert_called_once_with(
+            args=('/bin/ip', 'show', 'my-bond'),
         )
 
     def test_dig_reverse_lookup(self):

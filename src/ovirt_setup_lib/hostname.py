@@ -67,7 +67,7 @@ class Hostname(base.Base):
             (?P<address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})
             .+
             \s+
-            (?P<interface>\w+(\.\w+(@\w+)?)?)
+            (?P<interface>\w+([-.]\w+)*(\.\w+)?)(@\w+)?
             $
     """
     )
@@ -173,15 +173,24 @@ class Hostname(base.Base):
     def logger(self):
         return self._plugin.logger
 
-    def _getLocalAddresses(self, exclude_loopback=False):
+    def getLocalAddresses(self, exclude_loopback=False, device=None):
         interfaces = {}
         addresses = {}
-        rc, stdout, stderr = self.execute(
-            args=(
-                self.command.get('ip'),
-                'addr',
-            ),
-        )
+        if device:
+            rc, stdout, stderr = self.execute(
+                args=(
+                    self.command.get('ip'),
+                    'show',
+                    device,
+                ),
+            )
+        else:
+            rc, stdout, stderr = self.execute(
+                args=(
+                    self.command.get('ip'),
+                    'addr',
+                ),
+            )
         for line in stdout:
             interfacematch = self._INTERFACE_RE.match(line)
             addressmatch = self._ADDRESS_RE.match(line)
@@ -285,7 +294,7 @@ class Hostname(base.Base):
 
         if local_non_loopback:
             if not resolvedAddresses.issubset(
-                    self._getLocalAddresses(exclude_loopback=True)
+                    self.getLocalAddresses(exclude_loopback=True)
             ):
                 raise RuntimeError(
                     _(
@@ -300,7 +309,7 @@ class Hostname(base.Base):
 
         if not_local:
             if resolvedAddresses.intersection(
-                self._getLocalAddresses(exclude_loopback=False)
+                self.getLocalAddresses(exclude_loopback=False)
             ):
                 raise RuntimeError(
                     _(
