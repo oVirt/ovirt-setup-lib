@@ -6,3 +6,6 @@ python-devel
 gettext-devel
 pyflakes
 python-pep8
+python-unittest2
+python-mock
+otopi
