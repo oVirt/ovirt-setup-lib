@@ -180,6 +180,7 @@ class Hostname(base.Base):
             rc, stdout, stderr = self.execute(
                 args=(
                     self.command.get('ip'),
+                    'addr',
                     'show',
                     device,
                 ),

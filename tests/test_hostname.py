@@ -134,7 +134,7 @@ dynamic
 
         self.hostname.command.get.assert_called_once_with('ip')
         self.hostname.execute.assert_called_once_with(
-            args=('/bin/ip', 'show', 'my-bond'),
+            args=('/bin/ip', 'addr', 'show', 'my-bond'),
         )
 
     def test_dig_reverse_lookup(self):
