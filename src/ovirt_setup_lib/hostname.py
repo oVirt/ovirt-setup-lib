@@ -64,7 +64,7 @@ class Hostname(base.Base):
             \s+
             inet
             \s
-            (?P<address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})
+            (?P<address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})
             .+
             \s+
             (?P<interface>\w+([-.]\w+)*(\.\w+)?)(@\w+)?
@@ -173,7 +173,12 @@ class Hostname(base.Base):
     def logger(self):
         return self._plugin.logger
 
-    def getLocalAddresses(self, exclude_loopback=False, device=None):
+    def getLocalAddresses(
+        self,
+        exclude_loopback=False,
+        device=None,
+        with_subnet=False
+    ):
         interfaces = {}
         addresses = {}
         if device:
@@ -212,6 +217,8 @@ class Hostname(base.Base):
                 pass
             else:
                 iplist.extend(addresses.get(interface, []))
+        if not with_subnet:
+            iplist = [i.split('/')[0] for i in iplist]
 
         self.logger.debug('addresses: %s' % iplist)
         return set(iplist)
