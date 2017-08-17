@@ -132,7 +132,7 @@ class Hostname(base.Base):
             self.logger.debug(
                 (
                     '{classname} initialized only at stage {current_stage} '
-                    'so the dection of the required commands is up to '
+                    'so the detection of the required commands is up to '
                     'the caller object'
                 ).format(
                     classname=type(self).__name__,
