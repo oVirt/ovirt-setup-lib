@@ -6,12 +6,6 @@ rm -f ./*tar.gz
 autoreconf -ivf
 ./configure
 make clean
-
-# TODO: FIXME: make distcheck is running 0 tests since tests are not available
-# in the test directory during the distcheck call. This is a packaging issue
-# which should be addressed
-make check
-
 make distcheck
 
 # create the src.rpm
