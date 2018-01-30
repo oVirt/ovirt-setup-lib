@@ -16,6 +16,10 @@ python-clean:
 	rm -f $(srcdir)/*.pyc $(srcdir)/*.pyo *.pyc *.pyo
 
 python-check:
+	if [ -n "$(COVERAGE)" -a -n "$(UNIT2)" ]; then \
+		PYTHONPATH="$(top_srcdir)/src:$$PYTHONPATH" $(COVERAGE) run --omit="/usr/bin/*","/usr/lib*/python*/site-packages/*" $(UNIT2) discover -v $(srcdir); \
+	else \
 	if [ -n "$(UNIT2)" ]; then \
 		PYTHONPATH="$(top_srcdir)/src:$$PYTHONPATH" $(UNIT2) discover -v $(srcdir); \
+		fi \
 	fi

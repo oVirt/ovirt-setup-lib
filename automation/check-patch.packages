@@ -2,6 +2,7 @@ yum-utils
 autoconf
 automake
 make
+python-coverage
 python-devel
 gettext-devel
 pyflakes

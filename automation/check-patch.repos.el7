@@ -1,0 +1,3 @@
+ovirt-snapshot,http://resources.ovirt.org/pub/ovirt-master-snapshot/rpm/$distro
+ovirt-snapshot-static,http://resources.ovirt.org/pub/ovirt-master-snapshot-static/rpm/$distro
+virt7-ovirt-common-testing,https://cbs.centos.org/repos/virt7-ovirt-common-testing/$basearch/os/
