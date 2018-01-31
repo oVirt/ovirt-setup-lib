@@ -21,16 +21,13 @@
 #   - test for errors
 
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import StringIO
 
-from commons import BaseTestCase
+import commons
 from ovirt_setup_lib.hostname import Hostname
 
 
-class HostnameTestCase(BaseTestCase):
+class HostnameTestCase(commons.BaseTestCase):
 
     def setUp(self):
         self.mock_otopi()
@@ -42,7 +39,7 @@ class HostnameTestCase(BaseTestCase):
         self.hostname.command.get.return_value = '/bin/ip'
         self.hostname.execute.return_value = (
             0,
-            StringIO('''\
+            StringIO(u'''\
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group \
 default
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -60,7 +57,7 @@ dynamic
        valid_lft 2591873sec preferred_lft 604673sec
     inet6 fe80::56ee:75ff:fe5c:6daa/64 scope link
        valid_lft forever preferred_lft forever'''),
-            StringIO(''),
+            StringIO(u''),
         )
 
         addr = self.hostname.getLocalAddresses()
@@ -76,7 +73,7 @@ dynamic
         self.hostname.command.get.return_value = '/bin/ip'
         self.hostname.execute.return_value = (
             0,
-            StringIO('''\
+            StringIO(u'''\
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group \
 default
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -94,7 +91,7 @@ dynamic
        valid_lft 2591873sec preferred_lft 604673sec
     inet6 fe80::56ee:75ff:fe5c:6daa/64 scope link
        valid_lft forever preferred_lft forever'''),
-            StringIO(''),
+            StringIO(u''),
         )
 
         addr = self.hostname.getLocalAddresses(exclude_loopback=True)
@@ -111,7 +108,7 @@ dynamic
         self.hostname.command.get.return_value = '/bin/ip'
         self.hostname.execute.return_value = (
             0,
-            StringIO('''\
+            StringIO(u'''\
 5: my-bond: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue \
 state UP qlen 1000
     link/ether 00:14:5e:dd:05:55 brd ff:ff:ff:ff:ff:ff
@@ -122,7 +119,7 @@ dynamic
        valid_lft 2591821sec preferred_lft 604621sec
     inet6 fe80::b925:96f4:3a25:af8/64 scope link
        valid_lft forever preferred_lft forever'''),
-            StringIO(''),
+            StringIO(u''),
         )
 
         addr = self.hostname.getLocalAddresses(
@@ -141,7 +138,7 @@ dynamic
         self.hostname.command.get.return_value = '/usr/bin/dig'
         self.hostname.execute.return_value = (
             0,
-            StringIO('''
+            StringIO(u'''
 ; <<>> DiG 9.10.2-P4 <<>> -x 8.8.8.8
 ;; global options: +cmd
 ;; Got answer:
@@ -162,7 +159,7 @@ dynamic
 ;; MSG SIZE  rcvd: 93
 
 '''),
-            StringIO(''),
+            StringIO(u''),
         )
 
         names = self.hostname._dig_reverse_lookup('8.8.8.8')
@@ -179,7 +176,7 @@ dynamic
         self.hostname.command.get.return_value = '/usr/bin/dig'
         self.hostname.execute.return_value = (
             0,
-            StringIO('''
+            StringIO(u'''
 
 ; <<>> DiG 9.10.2-P4 <<>> ovirt.org
 ;; global options: +cmd
@@ -201,7 +198,7 @@ ovirt.org.              3600    IN      A       173.255.252.138
 ;; MSG SIZE  rcvd: 54
 
 '''),
-            StringIO(''),
+            StringIO(u''),
         )
 
         resolved = self.hostname.isResolvedByDNS('ovirt.org')
