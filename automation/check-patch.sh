@@ -4,8 +4,17 @@
 rm -rf output
 rm -f ./*tar.gz
 
+DISTVER="$(rpm --eval "%dist"|cut -c2-3)"
+PACKAGER=""
+if [[ "${DISTVER}" == "el" ]]; then
+    PACKAGER=yum
+else
+    PACKAGER=dnf
+fi
+
+
 #for some reason looks like otopi is not getting installed by STD ci scripts
-yum -y install otopi
+${PACKAGER} -y install otopi
 
 autoreconf -ivf
 ./configure

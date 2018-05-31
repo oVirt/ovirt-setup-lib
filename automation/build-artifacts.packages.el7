@@ -1,5 +1,4 @@
-dnf-utils
-dnf
+yum-utils
 autoconf
 automake
 make
