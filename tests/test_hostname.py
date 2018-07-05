@@ -65,7 +65,16 @@ dynamic
 
         addr = self.hostname.getLocalAddresses()
 
-        self.assertEqual(addr, set(['10.10.10.10', '127.0.0.1']))
+        self.assertEqual(
+            addr,
+            set([
+                '10.10.10.10',
+                '127.0.0.1',
+                '::1',
+                '2620:52:0:2282:56ee:75ff:aaaa:6daa',
+                'fe80::56ee:75ff:fe5c:6daa',
+            ])
+        )
 
         self.hostname.command.get.assert_called_once_with('ip')
         self.hostname.execute.assert_called_once_with(
@@ -99,7 +108,14 @@ dynamic
 
         addr = self.hostname.getLocalAddresses(exclude_loopback=True)
 
-        self.assertEqual(addr, set(['10.10.10.10']))
+        self.assertEqual(
+            addr,
+            set([
+                '10.10.10.10',
+                '2620:52:0:2282:56ee:75ff:aaaa:6daa',
+                'fe80::56ee:75ff:fe5c:6daa',
+            ])
+        )
 
         self.hostname.command.get.assert_called_once_with('ip')
         self.hostname.execute.assert_called_once_with(
@@ -130,7 +146,14 @@ dynamic
             device="my-bond"
         )
 
-        self.assertEqual(addr, set(['10.35.72.13']))
+        self.assertEqual(
+            addr,
+            set([
+                '10.35.72.13',
+                '2620:52:0:2348:6248:5124:671d:1146',
+                'fe80::b925:96f4:3a25:af8',
+            ])
+        )
 
         self.hostname.command.get.assert_called_once_with('ip')
         self.hostname.execute.assert_called_once_with(
@@ -210,6 +233,40 @@ ovirt.org.              3600    IN      A       173.255.252.138
 
         self.hostname.command.get.assert_called_once_with('dig')
         self.hostname.execute.assert_called_once_with(
-            args=['/usr/bin/dig', 'ovirt.org'],
+            args=[
+                '/usr/bin/dig',
+                '+noall',
+                '+answer',
+                'ovirt.org',
+                'ANY',
+            ],
             raiseOnError=False,
         )
+
+    def test_isResolvedByDNS_IPv6_only(self):
+        self.hostname.command.get.return_value = '/usr/bin/dig'
+        self.hostname.execute.return_value = (
+            0,
+            StringIO(u'''
+ipv6.l.google.com.      300     IN      AAAA    2a00:1450:4009:80b::200e
+'''),
+            StringIO(u''),
+        )
+
+        resolved = self.hostname.isResolvedByDNS('ipv6.l.google.com')
+
+        self.assertTrue(resolved)
+
+        self.hostname.command.get.assert_called_once_with('dig')
+        self.hostname.execute.assert_called_once_with(
+            args=[
+                '/usr/bin/dig',
+                '+noall',
+                '+answer',
+                'ipv6.l.google.com',
+                'ANY',
+            ],
+            raiseOnError=False,
+        )
+
+# vim: expandtab tabstop=4 shiftwidth=4
