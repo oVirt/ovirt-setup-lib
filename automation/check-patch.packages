@@ -6,6 +6,7 @@ make
 python3-coverage
 python3-devel
 gettext-devel
+python3-netaddr
 python3-pyflakes
 python3-pep8
 python3-unittest2

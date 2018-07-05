@@ -17,6 +17,7 @@
 
 
 import gettext
+import netaddr
 import re
 import six
 import socket
@@ -33,8 +34,6 @@ def _(m):
 
 @util.export
 class Hostname(base.Base):
-    _IPADDR_RE = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
-
     _DOMAIN_RE = re.compile(
         flags=re.VERBOSE,
         pattern=r"""
@@ -63,12 +62,10 @@ class Hostname(base.Base):
         flags=re.VERBOSE,
         pattern=r"""
             \s+
-            inet
+            inet6?
             \s
-            (?P<address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})
-            .+
-            \s+
-            (?P<interface>\w+([-.]\w+)*(\.\w+)?)(@\w+)?
+            (?P<address>[0-9a-fA-F:.]+/\d{1,3})
+            .*
             $
     """
     )
@@ -83,7 +80,7 @@ class Hostname(base.Base):
             \s+
             IN
             \s+
-            (A|CNAME)
+            (A|AAAA|CNAME)
             \s+
             [\w.-]+
         """
@@ -174,6 +171,10 @@ class Hostname(base.Base):
     def logger(self):
         return self._plugin.logger
 
+    @staticmethod
+    def valid_ip_address(address):
+        return netaddr.valid_ipv4(address)
+
     def getLocalAddresses(
         self,
         exclude_loopback=False,
@@ -202,12 +203,13 @@ class Hostname(base.Base):
             interfacematch = self._INTERFACE_RE.match(line)
             addressmatch = self._ADDRESS_RE.match(line)
             if interfacematch is not None:
+                iface = interfacematch.group('interface')
                 interfaces[
-                    interfacematch.group('interface')
+                    iface
                 ] = 'LOOPBACK' in interfacematch.group('options')
             elif addressmatch is not None:
                 addresses.setdefault(
-                    addressmatch.group('interface'),
+                    iface,
                     []
                 ).append(
                     addressmatch.group('address')
@@ -333,7 +335,7 @@ class Hostname(base.Base):
                 )
 
     def _validateFQDN(self, fqdn):
-        if self._IPADDR_RE.match(fqdn):
+        if self.valid_ip_address(fqdn):
             raise RuntimeError(
                 _(
                     '{fqdn} is an IP address and not a FQDN. '
@@ -371,7 +373,10 @@ class Hostname(base.Base):
     def isResolvedByDNS(self, fqdn):
         args = [
             self.command.get('dig'),
-            fqdn
+            '+noall',
+            '+answer',
+            fqdn,
+            'ANY',
         ]
         rc, stdout, stderr = self.execute(
             args=args,
@@ -390,8 +395,6 @@ class Hostname(base.Base):
             socket.getaddrinfo(
                 fqdn,
                 None,
-                # Currently we need an IPv4 address and ignore the rest.
-                socket.AF_INET,
             )
         ])
 

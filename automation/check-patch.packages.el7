@@ -6,6 +6,7 @@ python-coverage
 python-devel
 gettext-devel
 pyflakes
+python-netaddr
 python-pep8
 python-unittest2
 python-mock
