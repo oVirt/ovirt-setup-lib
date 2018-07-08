@@ -21,6 +21,15 @@ export OTOPI_DEBUG=1
 export OTOPI_COVERAGE=1
 make distcheck
 
+if PYTHON3=$(which python3); then
+	PYTHON=${PYTHON3} UNIT2=$(which python3-unit2) COVERAGE=$(which python3-coverage) ./configure
+	export COVERAGE_FILE=$(mktemp -p $PWD .coverage.XXXXXX)
+	make clean
+	make check
+fi
+
+COVERAGE=$(which coverage) || COVERAGE=$(which coverage3)
+
 # create the src.rpm
 rpmbuild \
     -D "_srcrpmdir $PWD/output" \
@@ -37,9 +46,9 @@ rpmbuild \
     --rebuild output/*.src.rpm
 
 unset COVERAGE_FILE
-coverage combine
+${COVERAGE} combine
 sed -i "s:ovirt-setup-lib-[0-9\.\-]*master/::g" .coverage
-coverage html -d exported-artifacts/coverage_html_report
+${COVERAGE} html -d exported-artifacts/coverage_html_report
 cp automation/index.html exported-artifacts/
 
 mv *.tar.gz exported-artifacts
