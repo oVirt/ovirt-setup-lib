@@ -41,3 +41,9 @@ coverage combine
 sed -i "s:ovirt-setup-lib-[0-9\.\-]*master/::g" .coverage
 coverage html -d exported-artifacts/coverage_html_report
 cp automation/index.html exported-artifacts/
+
+mv *.tar.gz exported-artifacts
+find \
+    "$PWD/output" \
+    -iname \*.rpm \
+    -exec mv {} exported-artifacts/ \;
