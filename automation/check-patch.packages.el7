@@ -9,4 +9,4 @@ pyflakes
 python-pep8
 python-unittest2
 python-mock
-otopi
+python2-otopi

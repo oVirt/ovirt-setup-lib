@@ -12,10 +12,6 @@ else
     PACKAGER=dnf
 fi
 
-
-#for some reason looks like otopi is not getting installed by STD ci scripts
-${PACKAGER} -y install otopi
-
 autoreconf -ivf
 ./configure
 make clean
