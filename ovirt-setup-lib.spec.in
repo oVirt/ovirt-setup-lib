@@ -43,10 +43,12 @@ Url:            http://www.ovirt.org
 BuildRequires:  gettext
 %if 0%{?with_python2}
 BuildRequires:  python2-devel
+Requires: python-six
 %endif
 
 %if 0%{?with_python3}
 BuildRequires:  python3-devel
+Requires: python3-six
 %endif
 
 %description
