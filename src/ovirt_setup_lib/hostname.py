@@ -42,31 +42,56 @@ class Hostname(base.Base):
         """
     )
 
+    _INTERFACE_RE_STR = '(?P<interface>\w+([-.]\w+)*(\.\w+)?)'
+
     _INTERFACE_RE = re.compile(
-        flags=re.VERBOSE,
-        pattern=r"""
-            ^
-            \d+
-            :
-            \s+
-            (?P<interface>\w+([-.]\w+)*(\.\w+)?)(@\w+)?
-            :
-            \s+
-            <(?P<options>[^>]+)
-            .*
-        """
+        pattern=_INTERFACE_RE_STR,
     )
 
-    _ADDRESS_RE = re.compile(
+    _IP_INTERFACE_RE = re.compile(
         flags=re.VERBOSE,
-        pattern=r"""
-            \s+
-            inet6?
-            \s
-            (?P<address>[0-9a-fA-F:.]+/\d{1,3})
-            .*
-            $
-    """
+        pattern='{pref}{iface}{suff}'.format(
+            pref=r"""
+                ^
+                \d+
+                :
+                \s+
+            """,
+            iface=_INTERFACE_RE_STR,
+            suff=r"""
+                (@\w+)?
+                :
+                \s+
+                <(?P<options>[^>]+)
+                .*
+            """,
+        ),
+    )
+
+    _ADDRESS_RE_STR = '(?P<address>[0-9a-fA-F:.]+)'
+
+    _IP_ADDRESS_RE = re.compile(
+        flags=re.VERBOSE,
+        pattern='{pref}{addr}{suff}'.format(
+            pref=r"""
+                \s+
+                inet6?
+                \s
+            """,
+            addr=_ADDRESS_RE_STR,
+            suff=r"""
+                /\d{1,3}
+                .*
+                $
+            """,
+        ),
+    )
+
+    _ADDRESS_SCOPE_RE = re.compile(
+        pattern='{addr}%{scope}'.format(
+            addr=_ADDRESS_RE_STR,
+            scope='(?P<scope>.*)',  # Can't use _INTERFACE_RE_STR
+        ),
     )
 
     _DIG_LOOKUP_RE = re.compile(
@@ -199,8 +224,8 @@ class Hostname(base.Base):
                 ),
             )
         for line in stdout:
-            interfacematch = self._INTERFACE_RE.match(line)
-            addressmatch = self._ADDRESS_RE.match(line)
+            interfacematch = self._IP_INTERFACE_RE.match(line)
+            addressmatch = self._IP_ADDRESS_RE.match(line)
             if interfacematch is not None:
                 iface = interfacematch.group('interface')
                 interfaces[
@@ -389,13 +414,22 @@ class Hostname(base.Base):
         return resolved
 
     def getResolvedAddresses(self, fqdn):
-        return set([
-            address[0] for __, __, __, __, address in
-            socket.getaddrinfo(
-                fqdn,
-                None,
-            )
-        ])
+        res = set([])
+        for __, __, __, __, sockaddr in socket.getaddrinfo(
+            fqdn,
+            None,
+        ):
+            address = sockaddr[0]
+            # python's getaddrinfo seems to simply wrap libc's getaddrinfo,
+            # which (see getaddrinfo(3) manpage):
+            # "supports the address%scope-id notation for specifying the IPv6
+            # scope-ID.". See also: https://tools.ietf.org/html/rfc4007
+            addr_scope_match = self._ADDRESS_SCOPE_RE.match(address)
+            if addr_scope_match:
+                address = addr_scope_match.group('address')
+            res.add(address)
+        self.logger.debug('getResolvedAddresses: %s', res)
+        return res
 
     def getHostnameTester(
         self,
