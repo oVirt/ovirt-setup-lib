@@ -3,6 +3,8 @@
 # remove any previous artifacts
 rm -rf output
 rm -f ./*tar.gz
+rm -f .coverage*
+find . -name "*.py[co]" -type f -delete
 
 DISTVER="$(rpm --eval "%dist"|cut -c2-3)"
 PACKAGER=""
