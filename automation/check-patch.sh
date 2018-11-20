@@ -50,6 +50,8 @@ rpmbuild \
 unset COVERAGE_FILE
 ${COVERAGE} combine
 sed -i -E "s:ovirt-setup-lib-[0-9\.\-]*(master)?/::g" .coverage
+sed -i -E "s:ovirt-setup-lib-[0-9\.\-]*(alpha[0-9]*)?/::g" .coverage
+sed -i -E "s:ovirt-setup-lib-[0-9\.\-]*(beta[0-9]*)?/::g" .coverage
 ${COVERAGE} html -d exported-artifacts/coverage_html_report
 cp automation/index.html exported-artifacts/
 
