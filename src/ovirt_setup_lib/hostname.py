@@ -466,6 +466,13 @@ class Hostname(base.Base):
 
         return test_hostname
 
+    def fqdnLocalhostValidation(self, fqdn):
+        res = ''
+        if fqdn == 'localhost' or fqdn == 'localhost.localdomain':
+            res = _("Using the name 'localhost' is not recommended, "
+                    "and may cause problems later on.")
+        return res
+
     def getHostname(
         self,
         envkey,
@@ -502,6 +509,11 @@ class Hostname(base.Base):
             tests=(
                 {
                     'test': self.getHostnameTester(**tester_kwarg),
+                },
+                {
+                    'test': self.fqdnLocalhostValidation,
+                    'is_error': False,
+                    'warn_note': 'Are you sure?',
                 },
             ),
             store=(True if envkey else False),
