@@ -23,14 +23,16 @@ export OTOPI_DEBUG=1
 export OTOPI_COVERAGE=1
 make distcheck
 
+COVERAGE=$(which coverage) || COVERAGE=$(which coverage3) || COVERAGE=$(which coverage-3)
+export COVERAGE
 if PYTHON3=$(which python3); then
-	PYTHON=${PYTHON3} UNIT2=$(which python3-unit2) COVERAGE=$(which python3-coverage) ./configure
+	PYTHON=${PYTHON3} UNIT2=$(which python3-unit2)  ./configure
 	export COVERAGE_FILE=$(mktemp -p $PWD .coverage.XXXXXX)
 	make clean
 	make check
 fi
 
-COVERAGE=$(which coverage) || COVERAGE=$(which coverage3)
+
 
 # create the src.rpm
 rpmbuild \
