@@ -7,6 +7,7 @@ python3-coverage
 python3-devel
 gettext-devel
 python3-netaddr
+python3-pycodestyle
 python3-pyflakes
 python3-unittest2
 python3-mock

@@ -43,7 +43,7 @@ class Hostname(base.Base):
         """
     )
 
-    _INTERFACE_RE_STR = '(?P<interface>\w+([-.]\w+)*(\.\w+)?)'
+    _INTERFACE_RE_STR = r'(?P<interface>\w+([-.]\w+)*(\.\w+)?)'
 
     _INTERFACE_RE = re.compile(
         pattern=_INTERFACE_RE_STR,
