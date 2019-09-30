@@ -6,9 +6,9 @@ rm -f ./*tar.gz
 rm -f .coverage*
 find . -name "*.py[co]" -type f -delete
 
-DISTVER="$(rpm --eval "%dist"|cut -c2-3)"
+DISTVER="$(rpm --eval "%dist"|cut -c2-4)"
 PACKAGER=""
-if [[ "${DISTVER}" == "el" ]]; then
+if [[ "${DISTVER}" == "el7" ]]; then
     PACKAGER=yum
 else
     PACKAGER=dnf
