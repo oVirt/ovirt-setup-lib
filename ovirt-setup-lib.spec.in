@@ -65,6 +65,7 @@ Obsoletes: ovirt-setup-lib < %{version}
 Requires: python-setuptools
 Requires: python-netaddr
 Requires: python-six
+Requires: cracklib-python
 
 %description -n python2-%{srcname}
 oVirt setup common library
@@ -77,6 +78,7 @@ Summary:        oVirt setup common library
 Requires: python3-setuptools
 Requires: python3-netaddr
 Requires: python3-six
+Requires: python3-pwquality
 
 %description -n python3-%{srcname}
 oVirt setup common library

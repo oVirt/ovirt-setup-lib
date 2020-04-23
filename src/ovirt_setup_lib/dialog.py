@@ -23,6 +23,13 @@ import gettext
 
 from otopi import util
 
+try:
+    import pwquality
+    _use_pwquality = True
+except ImportError:
+    # do not force this optional feature
+    _use_pwquality = False
+
 
 def _(m):
     return gettext.dgettext(message=m, domain='ovirt-setup-lib')
@@ -177,25 +184,22 @@ def queryPassword(
         note_verify_same - prompt to be displayed when querying again
         error_msg_not_same - error message to be displayed if not same
         verify_hard - optionally check that it is hard enough,
-            if cracklib is installed
+            if pwquality is installed
         warn_not_hard - warning to be displayed if not hard enough
             if string includes '{error}', it will be replaced by
-            actual error returned from cracklib
+            actual error returned from pwquality
         tests - extra tests to run, in the format of queryEnvKey
     """
 
     def password_hard_enough(password):
         res = ''
         try:
-            import cracklib
-            cracklib.FascistCheck(password)
-        except ImportError:
-            logger.debug(
-                'cannot import cracklib',
-                exc_info=True,
-            )
-        except ValueError as error:
-            res = warn_not_hard.format(error=error)
+            if(_use_pwquality):
+                pwq = pwquality.PWQSettings()
+                pwq.read_config()
+                pwq.check(password, None, None)
+        except pwquality.PWQError as e:
+            res = warn_not_hard.format(error=e.args[1])
         return res
 
     if not note_verify_same:
