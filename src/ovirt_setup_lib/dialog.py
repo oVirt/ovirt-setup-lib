@@ -103,7 +103,7 @@ def queryEnvKey(
         if interactive:
             value = dialog.queryString(
                 name=(
-                    'queryEnvKey_input:{key}'.format(key=key)
+                    'queryEnvKey_input_{key}'.format(key=key)
                     if name is None
                     else name
                 ),
