@@ -132,7 +132,7 @@ def queryEnvKey(
                         if not queryBoolean(
                             dialog=dialog,
                             name=(
-                                'queryEnvKey_warnverify:{key}'.format(
+                                'queryEnvKey_warnverify_{key}'.format(
                                     key=key
                                 ) if test.get('warn_name') is None
                                 else test['warn_name']
