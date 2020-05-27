@@ -70,6 +70,7 @@ def queryEnvKey(
     default=None,
     name=None,
     store=True,
+    max_attemps=1000,
 ):
     """Query string and validate it.
     Params:
@@ -99,7 +100,8 @@ def queryEnvKey(
     )
     interactive = key not in env or env[key] is None
     valid = False
-    while not valid:
+    attemps = 0
+    while not valid and attemps < max_attemps:
         if interactive:
             value = dialog.queryString(
                 name=(
@@ -126,6 +128,7 @@ def queryEnvKey(
                     if test.get('is_error', True):
                         logger.error(msg)
                         valid = False
+                        attemps += 1
                         break
                     else:
                         logger.warning(msg)
@@ -144,6 +147,7 @@ def queryEnvKey(
                             default=False,
                         ):
                             valid = False
+                            attemps += 1
                             break
                 else:  # Not interactive
                     if test.get('is_error', True):
@@ -151,6 +155,8 @@ def queryEnvKey(
                         raise RuntimeError(msg)
                     else:
                         logger.warning(msg)
+    if attemps == max_attemps:
+        raise RuntimeError('Maximum retry count has been reached')
     if store:
         env[key] = value
     return value
