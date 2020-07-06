@@ -70,7 +70,7 @@ def queryEnvKey(
     default=None,
     name=None,
     store=True,
-    max_attemps=1000,
+    max_attempts=1000,
 ):
     """Query string and validate it.
     Params:
@@ -81,16 +81,17 @@ def queryEnvKey(
             if env[key] is set, do not query
         note - prompt to be displayed to the user
         tests - tests to run on the input value
+        store - Store the value in environment
 
     tests is a list of dicts, each having:
-    'test' -- Accepts a value and returns an error message if bad
-    'is_error' -- True (default) if a failure is an error, else a warning
-        If True and a test failed, ask user again. Otherwise prompt user
-        to accept value anyway.
-    'warn_note' -- Message displayed if warning
-    'warn_name' -- warn dialog name
-    'interactive_only' -- Do not run test if env[key] is already set
-    'store' -- Store the value in environment
+        'test' -- Accepts a value and returns an error message if bad
+        'is_error' -- True (default) if a failure is an error, else a warning
+            If True and a test failed, ask user again. Otherwise prompt user
+            to accept value anyway.
+        'warn_note' -- Message displayed if warning
+        'warn_name' -- warn dialog name
+        'interactive_only' -- Do not run test if env[key] is already set
+        'default' -- Default value for warn_note message
     """
 
     logger.debug(
@@ -100,8 +101,8 @@ def queryEnvKey(
     )
     interactive = key not in env or env[key] is None
     valid = False
-    attemps = 0
-    while not valid and attemps < max_attemps:
+    attempts = 0
+    while not valid and attempts < max_attempts:
         if interactive:
             value = dialog.queryString(
                 name=(
@@ -128,12 +129,12 @@ def queryEnvKey(
                     if test.get('is_error', True):
                         logger.error(msg)
                         valid = False
-                        attemps += 1
+                        attempts += 1
                         break
                     else:
                         logger.warning(msg)
-                        if not queryBoolean(
-                            dialog=dialog,
+                        valid = False
+                        proceed = dialog.queryString(
                             name=(
                                 'queryEnvKey_warnverify_{key}'.format(
                                     key=key
@@ -144,18 +145,24 @@ def queryEnvKey(
                                 msg=test.get('warn_note', _('OK? ')),
                             ),
                             prompt=True,
-                            default=False,
-                        ):
-                            valid = False
-                            attemps += 1
+                            caseSensitive=False,
+                            validValues=(_('Yes'), _('No'), _('Abort')),
+                            default=test.get('default', _('No')),
+                        )
+                        if proceed.upper() == _('Yes').upper():
+                            valid = True
                             break
+                        elif proceed.upper() == _('Abort').upper():
+                            raise RuntimeError(_('Aborted by user'))
+                        attempts += 1
+                        break
                 else:  # Not interactive
                     if test.get('is_error', True):
                         logger.error(msg)
                         raise RuntimeError(msg)
                     else:
                         logger.warning(msg)
-    if attemps == max_attemps:
+    if attempts >= max_attempts:
         raise RuntimeError('Maximum retry count has been reached')
     if store:
         env[key] = value
