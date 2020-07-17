@@ -1,7 +1,0 @@
-yum-utils
-autoconf
-automake
-make
-python-devel
-gettext-devel
-git
