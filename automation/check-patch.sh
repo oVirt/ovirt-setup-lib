@@ -1,24 +1,22 @@
 #!/bin/bash -xe
 
+# mock runner is not setting up the system correctly
+# https://issues.redhat.com/browse/CPDEVOPS-242
+dnf install -y $(cat automation/check-patch.packages)
+
 # remove any previous artifacts
 rm -rf output
 rm -f ./*tar.gz
 rm -f .coverage*
 find . -name "*.py[co]" -type f -delete
 
-DISTVER="$(rpm --eval "%dist"|cut -c2-4)"
-PACKAGER=""
-if [[ "${DISTVER}" == "el7" ]]; then
-    PACKAGER=yum
-else
-    PACKAGER=dnf
-fi
-
+autopoint
 autoreconf -ivf
 ./configure
 make clean
 export COVERAGE_PROCESS_START="${PWD}/automation/coverage.rc"
-export COVERAGE_FILE=$(mktemp -p $PWD .coverage.XXXXXX)
+COVERAGE_FILE=$(mktemp -p "$PWD" .coverage.XXXXXX)
+export COVERAGE_FILE
 export OTOPI_DEBUG=1
 export OTOPI_COVERAGE=1
 make distcheck
@@ -27,7 +25,8 @@ COVERAGE=$(which coverage) || COVERAGE=$(which coverage3) || COVERAGE=$(which co
 export COVERAGE
 if PYTHON3=$(which python3); then
 	PYTHON=${PYTHON3} UNIT2=$(which python3-unit2)  ./configure
-	export COVERAGE_FILE=$(mktemp -p $PWD .coverage.XXXXXX)
+    COVERAGE_FILE=$(mktemp -p "$PWD" .coverage.XXXXXX)
+	export COVERAGE_FILE
 	make clean
 	make check
 fi
@@ -50,14 +49,13 @@ rpmbuild \
     --rebuild output/*.src.rpm
 
 unset COVERAGE_FILE
+# extract tarball to make src available to coverage
+tar xzf ./*.tar.gz
 ${COVERAGE} combine
-sed -i -E "s:ovirt-setup-lib-[0-9\.\-]*(master)?/::g" .coverage
-sed -i -E "s:ovirt-setup-lib-[0-9\.\-]*(alpha[0-9]*)?/::g" .coverage
-sed -i -E "s:ovirt-setup-lib-[0-9\.\-]*(beta[0-9]*)?/::g" .coverage
 ${COVERAGE} html -d exported-artifacts/coverage_html_report
 cp automation/index.html exported-artifacts/
 
-mv *.tar.gz exported-artifacts
+mv ./*.tar.gz exported-artifacts
 find \
     "$PWD/output" \
     -iname \*.rpm \

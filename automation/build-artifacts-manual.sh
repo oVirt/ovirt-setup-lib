@@ -1,7 +1,12 @@
 #!/bin/bash -xe
 
+# mock runner is not setting up the system correctly
+# https://issues.redhat.com/browse/CPDEVOPS-242
+dnf install -y $(cat automation/check-patch.packages)
+
 # remove any previous artifacts
 rm -rf output
+autopoint
 autoreconf -ivf
 ./configure
 make clean

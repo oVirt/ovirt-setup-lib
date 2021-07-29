@@ -3,6 +3,6 @@ dnf
 autoconf
 automake
 make
-python-devel
+python3-devel
 gettext-devel
 git
