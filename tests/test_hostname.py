@@ -236,7 +236,9 @@ ovirt.org.              3600    IN      A       173.255.252.138
                 '+noall',
                 '+answer',
                 'ovirt.org',
-                'ANY',
+                'A',
+                'ovirt.org',
+                'AAAA',
             ],
             raiseOnError=False,
         )
@@ -262,7 +264,9 @@ ipv6.l.google.com.      300     IN      AAAA    2a00:1450:4009:80b::200e
                 '+noall',
                 '+answer',
                 'ipv6.l.google.com',
-                'ANY',
+                'A',
+                'ipv6.l.google.com',
+                'AAAA',
             ],
             raiseOnError=False,
         )

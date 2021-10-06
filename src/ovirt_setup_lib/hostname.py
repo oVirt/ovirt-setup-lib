@@ -401,7 +401,9 @@ class Hostname(base.Base):
             '+noall',
             '+answer',
             fqdn,
-            'ANY',
+            'A',
+            fqdn,
+            'AAAA',
         ]
         rc, stdout, stderr = self.execute(
             args=args,
