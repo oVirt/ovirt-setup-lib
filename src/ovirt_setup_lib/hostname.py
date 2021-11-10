@@ -278,11 +278,13 @@ class Hostname(base.Base):
         local_non_loopback,
         not_local,
         not_local_text,
+        v6,
+        v4,
     ):
 
         if system:
             try:
-                resolvedAddresses = self.getResolvedAddresses(fqdn)
+                resolvedAddresses = self.getResolvedAddresses(fqdn, v6, v4)
                 self.logger.debug(
                     '{fqdn} resolves to: {addresses}'.format(
                         fqdn=fqdn,
@@ -416,11 +418,21 @@ class Hostname(base.Base):
                     resolved = True
         return resolved
 
-    def getResolvedAddresses(self, fqdn):
+    def getResolvedAddresses(self, fqdn, v6=False, v4=False):
         res = set([])
+        type = 0
+        # In case both v6 and v4 variables are set to True (unlikely),
+        # we prioritize IPv6 over IPv4, same as DNS resolution.
+        # In case both v6 and v4 variables are set to False (default values),
+        # a set of all IPv6 and IPv4 addresses will be returned.
+        if v6:
+            type = socket.AF_INET6
+        elif v4:
+            type = socket.AF_INET
         for __, __, __, __, sockaddr in socket.getaddrinfo(
             fqdn,
             None,
+            type,
         ):
             address = sockaddr[0]
             # python's getaddrinfo seems to simply wrap libc's getaddrinfo,
@@ -444,6 +456,8 @@ class Hostname(base.Base):
         not_local=False,  # If True, refuse a name of the current machine
         not_local_text='',  # Additional hint if it fails not_local test
         allow_empty=False,  # Allow empty responses
+        v6=False,  # If True, validate resolved FQDN for IPv6 only
+        v4=False,  # If True, validate resolved FQDN for IPv4 only
     ):
 
         def test_hostname(name):
@@ -460,6 +474,8 @@ class Hostname(base.Base):
                         local_non_loopback,
                         not_local,
                         not_local_text,
+                        v6,
+                        v4,
                     )
             except RuntimeError as e:
                 res = _('Host name is not valid: {e}').format(e=e)
