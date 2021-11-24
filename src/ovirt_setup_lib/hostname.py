@@ -498,6 +498,7 @@ class Hostname(base.Base):
         supply_default,
         prompttext=None,
         dialog_name=None,
+        extra_tests=None,
         **tester_kwarg
     ):
 
@@ -511,6 +512,19 @@ class Hostname(base.Base):
             dialog_name = 'OVESETUP_NETWORK_FQDN_{whichhost}'.format(
                 whichhost=whichhost.replace(' ', '_'),
             )
+        tests = (
+            {
+                'test': self.getHostnameTester(**tester_kwarg),
+            },
+            {
+                'test': self.fqdnLocalhostValidation,
+                'is_error': False,
+                'warn_note': 'Are you sure?',
+            },
+        )
+        if extra_tests is not None:
+            tests = *tests, extra_tests
+
         return dialog.queryEnvKey(
             name=dialog_name,
             dialog=self.dialog,
@@ -524,16 +538,7 @@ class Hostname(base.Base):
             ),
             prompt=True,
             default=socket.getfqdn() if supply_default else '',
-            tests=(
-                {
-                    'test': self.getHostnameTester(**tester_kwarg),
-                },
-                {
-                    'test': self.fqdnLocalhostValidation,
-                    'is_error': False,
-                    'warn_note': 'Are you sure?',
-                },
-            ),
+            tests=tests,
             store=(True if envkey else False),
         )
 
