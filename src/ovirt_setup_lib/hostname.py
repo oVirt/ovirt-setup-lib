@@ -463,7 +463,16 @@ class Hostname(base.Base):
         def test_hostname(name):
             res = ''
             try:
-                if not (allow_empty and not name):
+                if not name:
+                    if not allow_empty:
+                        raise RuntimeError(_('An empty name is not allowed'))
+                    else:
+                        # Do nothing - an empty name is allowed and it's empty,
+                        # no need to validate it further.
+                        pass
+                else:
+                    # If we got a name, need to validate it, regardless of
+                    # whether it's allowed to be empty or not.
                     if validate_syntax:
                         self._validateFQDN(name)
                     self._validateFQDNresolvability(
