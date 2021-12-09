@@ -525,19 +525,21 @@ class Hostname(base.Base):
         if extra_tests is not None:
             tests = *tests, extra_tests
 
+        if supply_default:
+            note = _(f'{prompttext} [@DEFAULT@]: ')
+            default = socket.getfqdn()
+        else:
+            note = _(f'{prompttext}: ')
+            default = None
         return dialog.queryEnvKey(
             name=dialog_name,
             dialog=self.dialog,
             logger=self.logger,
             env=self.environment,
             key=envkey,
-            note=_(
-                '{prompt} [@DEFAULT@]: '
-            ).format(
-                prompt=prompttext,
-            ),
+            note=note,
             prompt=True,
-            default=socket.getfqdn() if supply_default else '',
+            default=default,
             tests=tests,
             store=(True if envkey else False),
         )
