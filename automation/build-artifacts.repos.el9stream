@@ -1,6 +1,2 @@
 # Provides otopi
 ovirt-snapshot,http://resources.ovirt.org/pub/ovirt-master-snapshot/rpm/el9
-# Provides python3-unittest2
-el9collection,https://download.copr.fedorainfracloud.org/results/sbonazzo/EL9Collection/centos-stream-9-$basearch/
-# Provides python3-unittest2 deps
-rdo-trunk-deps,https://trunk.rdoproject.org/centos9-master-preview/deps/latest/

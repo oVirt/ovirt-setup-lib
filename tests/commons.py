@@ -17,10 +17,10 @@
 
 
 import mock
-import unittest2
+import unittest
 
 
-class BaseTestCase(unittest2.TestCase):
+class BaseTestCase(unittest.TestCase):
 
     _patchers = {}
 
