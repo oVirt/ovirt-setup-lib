@@ -24,7 +24,7 @@ make distcheck
 COVERAGE=$(which coverage) || COVERAGE=$(which coverage3) || COVERAGE=$(which coverage-3)
 export COVERAGE
 if PYTHON3=$(which python3); then
-	PYTHON=${PYTHON3} UNIT2=$(which python3-unit2)  ./configure
+	PYTHON=${PYTHON3} ./configure
     COVERAGE_FILE=$(mktemp -p "$PWD" .coverage.XXXXXX)
 	export COVERAGE_FILE
 	make clean

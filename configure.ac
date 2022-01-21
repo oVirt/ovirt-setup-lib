@@ -35,12 +35,10 @@ AC_ARG_VAR([PYFLAKES], [path to pyflakes utility])
 AC_CHECK_PROGS([PYFLAKES], [pyflakes])
 AC_ARG_VAR([PEP8], [path to pep8 utility])
 AC_CHECK_PROGS([PEP8], [pycodestyle-3 pep8])
-AC_ARG_VAR([UNIT2], [path to unit2 utility])
-AC_PATH_PROG([UNIT2], [unit2])
 AC_ARG_VAR([COVERAGE], [path to coverage utility])
-AC_CHECK_PROGS([COVERAGE], [coverage])
+AC_CHECK_PROGS([COVERAGE], [coverage-3 coverage])
 
-AM_PATH_PYTHON([2.6],, [AC_MSG_ERROR([Cannot find python])])
+AM_PATH_PYTHON([3.6],, [AC_MSG_ERROR([Cannot find python])])
 AM_CONDITIONAL([PYTHON_SYNTAX_CHECK], [test "${enable_python_syntax_check}" = "yes"])
 
 ovirtsetuplibdir="\$(pythondir)/ovirt_setup_lib"
