@@ -39,6 +39,16 @@ jobs:
       - run: automation/check-patch.sh
         # TODO: Split to separate steps?
 
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=oVirt
+            -Dsonar.projectKey=ovirt-1
+
       - name: Upload artifacts
         uses: ovirt/upload-rpms-action@main
         with:

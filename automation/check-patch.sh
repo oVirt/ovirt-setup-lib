@@ -53,6 +53,7 @@ unset COVERAGE_FILE
 tar xzf ./*.tar.gz
 ${COVERAGE} combine
 ${COVERAGE} html -d exported-artifacts/coverage_html_report
+${COVERAGE} xml  -o test-coverage.xml
 cp automation/index.html exported-artifacts/
 
 mv ./*.tar.gz exported-artifacts
