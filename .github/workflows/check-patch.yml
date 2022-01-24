@@ -14,14 +14,12 @@ jobs:
       matrix:
         include:
           - name: centos-stream-8
-            shortcut: cs8
-            container-name: stream8
+            distro: el8stream
           - name: centos-stream-9
-            shortcut: cs9
-            container-name: stream9
+            distro: el9stream
     name: ${{ matrix.name }}
     container:
-      image: quay.io/ovirt/buildcontainer:${{ matrix.container-name }}
+      image: quay.io/ovirt/buildcontainer:${{ matrix.distro }}
     steps:
       - name: Import ovirt-master-snapshot key
         run: rpm --import https://download.copr.fedorainfracloud.org/results/ovirt/ovirt-master-snapshot/pubkey.gpg
@@ -40,6 +38,7 @@ jobs:
         # TODO: Split to separate steps?
 
       - name: Upload artifacts
-        uses: ovirt/upload-rpms-action@main
+        uses: ovirt/upload-rpms-action@v1
         with:
           directory: exported-artifacts
+          distro: ${{ matrix.distro }}
