@@ -19,7 +19,6 @@
 import gettext
 import netaddr
 import re
-import six
 import socket
 
 from otopi import base, util
@@ -240,7 +239,7 @@ class Hostname(base.Base):
                     addressmatch.group('address')
                 )
         iplist = []
-        for interface, loopback in six.iteritems(interfaces):
+        for interface, loopback in interfaces.items():
             if exclude_loopback and loopback:
                 pass
             else:
