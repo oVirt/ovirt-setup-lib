@@ -13,13 +13,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: centos-stream-8
-            distro: el8stream
           - name: centos-stream-9
-            distro: el9stream
+            container-name: el9stream
+          - name: centos-stream-10
+            container-name: el10stream
+
     name: ${{ matrix.name }}
     container:
-      image: quay.io/ovirt/buildcontainer:${{ matrix.distro }}
+      image: quay.io/ovirt/buildcontainer:${{ matrix.container-name }}
     steps:
       - name: Import ovirt-master-snapshot key
         run: rpm --import https://download.copr.fedorainfracloud.org/results/ovirt/ovirt-master-snapshot/pubkey.gpg
@@ -28,9 +29,12 @@ jobs:
         run: dnf --repofrompath=ovirt-master-snapshot,https://download.copr.fedorainfracloud.org/results/ovirt/ovirt-master-snapshot/${{ matrix.name }}-x86_64/ install -y ovirt-release-master
 
       - name: Install dependencies
-        run: dnf install -y --setopt=tsflags=nodocs autoconf automake dnf dnf-plugins-core dnf-plugin-versionlock gettext-devel python3-coverage python3-pycodestyle python3-pyflakes gettext python3-devel gcc which
+        run: dnf install -y --setopt=tsflags=nodocs autoconf automake dnf dnf-plugins-core dnf-plugin-versionlock gettext-devel gettext python3-devel gcc which
+      
+      - name: Install python dependencies
+        run: dnf install -y python3-pip -y && pip install pyflakes coverage pycodestyle mock
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -38,7 +42,6 @@ jobs:
         # TODO: Split to separate steps?
 
       - name: Upload artifacts
-        uses: ovirt/upload-rpms-action@v1
+        uses: ovirt/upload-rpms-action@main
         with:
           directory: exported-artifacts
-          distro: ${{ matrix.distro }}

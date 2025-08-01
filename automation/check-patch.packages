@@ -3,11 +3,7 @@ dnf
 autoconf
 automake
 make
-python3-coverage
 python3-devel
 gettext-devel
 python3-netaddr
-python3-pycodestyle
-python3-pyflakes
-python3-mock
 python3-otopi
