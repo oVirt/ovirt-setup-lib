@@ -207,7 +207,7 @@ def queryPassword(
     def password_hard_enough(password):
         res = ''
         try:
-            if(_use_pwquality):
+            if _use_pwquality:
                 pwq = pwquality.PWQSettings()
                 pwq.read_config()
                 pwq.check(password, None, None)
