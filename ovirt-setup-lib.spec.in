@@ -40,7 +40,6 @@ Summary:        oVirt setup common library
 %{?python_provide:%python_provide python3-%{srcname}}
 Requires: python3-setuptools
 Requires: python3-netaddr
-Requires: python3-six
 Requires: python3-pwquality
 
 %description -n python3-%{srcname}
