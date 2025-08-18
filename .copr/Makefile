@@ -1,7 +1,7 @@
 .PHONY: installdeps srpm
 
 installdeps:
-	dnf -y install git autoconf automake make gettext-devel
+	dnf -y install git autoconf automake make gettext-devel python3-devel
 
 srpm: installdeps
 	$(eval SUFFIX=$(shell sh -c " echo '.$$(date -u +%Y%m%d%H%M%S).git$$(git rev-parse --short HEAD)'"))
