@@ -30,6 +30,7 @@ Url:            http://www.ovirt.org
 
 BuildRequires:  gettext
 BuildRequires:  python3-devel
+BuildRequires:  make
 Requires: python3-%{srcname}
 
 %description
