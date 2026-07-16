@@ -1,9 +1,0 @@
-dnf-utils
-dnf
-autoconf
-automake
-make
-python3-devel
-gettext-devel
-python3-netaddr
-python3-otopi
